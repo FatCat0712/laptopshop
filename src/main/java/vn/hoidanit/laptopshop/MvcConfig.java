@@ -19,11 +19,11 @@ public class MvcConfig implements WebMvcConfigurer {
         Path dirPath = Paths.get(absolutePath);
         String systemPath = dirPath.toFile().getAbsolutePath();
 
-        System.out.println("System Path:"+ systemPath);
 
 
         registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/");
         registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/");
         registry.addResourceHandler("/avatar/**").addResourceLocations("file:" + systemPath + "/");
+        registry.addResourceHandler("/client/**").addResourceLocations("classpath:/templates/client/");
     }
 }
