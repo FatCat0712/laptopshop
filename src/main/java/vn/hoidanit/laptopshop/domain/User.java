@@ -113,6 +113,8 @@ public class User {
                 ", fullName='" + fullName + '\'' +
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", role=" + role +
                 '}';
     }
 }

@@ -3,25 +3,31 @@ package vn.hoidanit.laptopshop.admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.service.UploadService;
 import vn.hoidanit.laptopshop.service.UserService;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class UserController {
-    private final UserService service;
+    private final UserService userService;
+    private final UploadService uploadService;
 
     @Autowired
-    public UserController(UserService service) {
-        this.service = service;
+    public UserController(UserService userService, UploadService uploadService) {
+        this.userService = userService;
+        this.uploadService = uploadService;
     }
-
 
     @RequestMapping(value = {"","/"})
     public String index() {
-        List<User> listUsers = service.listAll();
+        List<User> listUsers = userService.listAll();
         System.out.println(listUsers);
         return "index";
     }
@@ -36,7 +42,7 @@ public class UserController {
 
     @GetMapping("/admin/user")
     public String listUser(Model model) {
-        List<User> listUsers = service.listAll();
+        List<User> listUsers = userService.listAll();
         model.addAttribute("listUsers", listUsers);
         model.addAttribute("pageTitle", "Table Users");
         return "admin/user/show";
@@ -44,7 +50,7 @@ public class UserController {
 
     @GetMapping("/admin/user/{id}")
     public String getUserDetail(@PathVariable Long id, Model model) {
-        User user = service.get(id);
+        User user = userService.get(id);
         if(user != null) {
             model.addAttribute("pageTitle", String.format("User Detail - ID %d", id));
             model.addAttribute("id", id);
@@ -56,7 +62,7 @@ public class UserController {
 
     @GetMapping("/admin/user/update/{id}")
     public String updateUser(@PathVariable Long id, Model model) {
-        User user = service.get(id);
+        User user = userService.get(id);
         if(user != null) {
             model.addAttribute("pageTitle", "Update a user");
             model.addAttribute("user", user);
@@ -66,8 +72,14 @@ public class UserController {
     }
 
     @PostMapping("/admin/user/save")
-    public String saveUser(User userInform) {
-        service.save(userInform);
+    public String saveUser(User userInform, @RequestParam(name = "avatarFile", required = false) MultipartFile imageFile) throws IOException {
+            if(!imageFile.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "-" + StringUtils.cleanPath(Objects.requireNonNull(imageFile.getOriginalFilename()));
+                userInform.setAvatar(fileName);
+                String uploadDir = "avatar/";
+                uploadService.saveFile(uploadDir, fileName, imageFile);
+            }
+        userService.save(userInform);
         return "redirect:/admin/user";
     }
 
@@ -82,7 +94,7 @@ public class UserController {
 
     @PostMapping("/admin/user/delete")
     public String deleteUser(@ModelAttribute("user") User user) {
-        service.deleteUser(user.getId());
+        userService.deleteUser(user.getId());
         return "redirect:/admin/user";
     }
 

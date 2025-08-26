@@ -45,6 +45,7 @@
                                     <th>ID</th>
                                     <th>Email</th>
                                     <th>Full Name</th>
+                                    <th>Role</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
@@ -53,6 +54,7 @@
                                     <td>[[${user.id}]]</td>
                                     <td>[[${user.email}]]</td>
                                     <td>[[${user.fullName}]]</td>
+                                    <td>[[${user.role}]]</td>
                                     <td>
                                         <a class="btn btn-success" th:href="'/admin/user/' + ${user.id}">View</a>
                                         <a class="btn btn-warning" th:href="'/admin/user/update/' + ${user.id}">Update</a>

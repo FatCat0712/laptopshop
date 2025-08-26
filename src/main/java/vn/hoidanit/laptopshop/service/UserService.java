@@ -1,8 +1,11 @@
 package vn.hoidanit.laptopshop.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import vn.hoidanit.laptopshop.domain.Role;
 import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.repository.RoleRepository;
 import vn.hoidanit.laptopshop.repository.UserRepository;
 
 import java.util.List;
@@ -10,23 +13,27 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    private final UserRepository repo;
+    private final UserRepository userRepo;
+    private final RoleRepository roleRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository repo) {
-        this.repo = repo;
+    public UserService(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder) {
+        this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> listAll() {
-        return repo.findAll();
+        return userRepo.findAll();
     }
 
     public User listByEmail(String email) {
-        return repo.findByEmail(email);
+        return userRepo.findByEmail(email);
     }
 
     public User get(Long id) {
-        Optional<User> user = repo.findById(id);
+        Optional<User> user = userRepo.findById(id);
         return user.orElse(null);
     }
 
@@ -40,15 +47,30 @@ public class UserService {
         else {
             user = new User();
             user.setEmail(userInForm.getEmail());
-            user.setPassword(userInForm.getPassword());
         }
+
+        if(userInForm.getPassword() != null && !userInForm.getPassword().isEmpty())  {
+            user.setPassword(encodePassword(userInForm.getPassword()));
+        }
+
+        Role role = getRoleByName(userInForm.getRole().getName());
+        user.setRole(role);
+        user.setAvatar(userInForm.getAvatar());
         user.setFullName(userInForm.getFullName());
         user.setAddress(userInForm.getAddress());
         user.setPhone(userInForm.getPhone());
-        repo.save(user);
+        userRepo.save(user);
+    }
+
+    public String encodePassword(String rawPassword) {
+        return passwordEncoder.encode(rawPassword);
     }
 
     public void deleteUser(long id) {
-        repo.deleteById(id);
+        userRepo.deleteById(id);
+    }
+
+    public Role getRoleByName(String name) {
+        return roleRepo.findByName(name);
     }
 }
