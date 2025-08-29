@@ -157,19 +157,76 @@
     }
 }
 
-.dropdown .dropdown-menu a:hover {
-    background: var(--bs-secondary);
-    color: var(--bs-primary);
+@media (max-width: 1200px) {
+     .my-sm-style {
+         border-bottom-left-radius: .375rem; /* same as .rounded-bottom */
+        border-bottom-right-radius: .375rem;
+        padding-bottom: .5rem; /* same as pb-2 */
+        overflow: hidden;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); /* same as .shadow */
+     }
+
+
 }
 
-.navbar .nav-item:hover .dropdown-menu {
-    transform: rotateX(0deg);
-    visibility: visible;
-    background: var(--bs-light) !important;
-    border-radius: 10px !important;
-    transition: .5s;
-    opacity: 1;
+@media (min-width: 1200px) {
+    dropdown .dropdown-menu a:hover,
+        .dropdown-item:hover,
+        .dropdown-item:focus{
+            background: var(--bs-white);
+            color: var(--bs-primary);
+        }
+
+        .dropdown-menu::before,
+        .dropdown-menu::after {
+          content: "";
+          position: absolute;
+          top: -9px; /* adjust based on spacing */
+          right: 5px; /* adjust to align with icon */
+           border-width: 0 8px 10px 8px;
+           border-style: solid;
+            z-index: 10;
+        }
+
+        .dropdown-menu::before {
+          border-color: transparent transparent rgba(0,0,0,.9) transparent; /* border shadow */
+        }
+
+        .dropdown-menu::after {
+          border-color: transparent transparent #fff transparent; /* dropdown background */
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+          opacity: 0;
+          transform: translateY(15px);
+          visibility: hidden;
+          transition: all 0.3s ease;
+          display: block; /* keep block so we can animate */
+          margin-top: 10px; /* spacing for arrow */
+          border: 1px solid rgba(0,0,0,.15);
+          right: 0;
+          left: auto;
+        }
+
+        /* On hover of dropdown parent */
+        .dropdown:hover .dropdown-menu {
+          opacity: 1;
+          transform: translateY(0);
+          visibility: visible;
+          z-index: 1;
+        }
 }
+
+.navbar-nav .nav-link.active {
+    color: #81C408;
+}
+
+
+
 
 #searchModal .modal-content {
     background: rgba(255, 255, 255, .8);

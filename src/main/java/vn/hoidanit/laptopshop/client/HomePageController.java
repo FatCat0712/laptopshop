@@ -30,11 +30,16 @@ public class HomePageController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping(value = {"", "/"})
+    @GetMapping("/home")
     public String getHomePage(Model model) {
         List<Product> listProducts = productService.listAll();
         model.addAttribute("listProducts", listProducts);
         return "client/homepage/show";
+    }
+
+    @GetMapping(value = {"/",""})
+    public String home() {
+        return "redirect:/home";
     }
 
     @GetMapping("/login")

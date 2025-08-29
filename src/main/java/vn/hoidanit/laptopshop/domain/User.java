@@ -31,6 +31,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
 
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
+
 
     public User() {
     }
@@ -105,6 +108,14 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     @Transient
