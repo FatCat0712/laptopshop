@@ -1,9 +1,11 @@
 package vn.hoidanit.laptopshop.admin;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hoidanit.laptopshop.domain.User;
@@ -72,15 +74,24 @@ public class UserController {
     }
 
     @PostMapping("/admin/user/save")
-    public String saveUser(User userInform, @RequestParam(name = "avatarFile", required = false) MultipartFile imageFile) throws IOException {
+    public String saveUser(
+            @Valid User userInform,
+            BindingResult bindingResult,
+            @RequestParam(name = "avatarFile", required = false) MultipartFile imageFile
+    ) throws IOException {
+            //validate
+            if(bindingResult.hasErrors()) {
+                return "admin/user/create";
+            }
+
             if(!imageFile.isEmpty()) {
                 String fileName = System.currentTimeMillis() + "-" + StringUtils.cleanPath(Objects.requireNonNull(imageFile.getOriginalFilename()));
                 userInform.setAvatar(fileName);
                 String uploadDir = "avatar/";
                 uploadService.saveFile(uploadDir, fileName, imageFile);
             }
-        userService.save(userInform);
-        return "redirect:/admin/user";
+            userService.save(userInform);
+            return "redirect:/admin/user";
     }
 
     @GetMapping("/admin/user/delete/{id}")

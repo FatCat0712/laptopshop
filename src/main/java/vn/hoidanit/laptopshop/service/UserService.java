@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.laptopshop.domain.Role;
 import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.domain.dto.RegisterDTO;
 import vn.hoidanit.laptopshop.repository.RoleRepository;
 import vn.hoidanit.laptopshop.repository.UserRepository;
 
@@ -49,6 +50,7 @@ public class UserService {
             user.setEmail(userInForm.getEmail());
         }
 
+
         if(userInForm.getPassword() != null && !userInForm.getPassword().isEmpty())  {
             user.setPassword(encodePassword(userInForm.getPassword()));
         }
@@ -66,6 +68,7 @@ public class UserService {
         return passwordEncoder.encode(rawPassword);
     }
 
+
     public void deleteUser(long id) {
         userRepo.deleteById(id);
     }
@@ -73,4 +76,22 @@ public class UserService {
     public Role getRoleByName(String name) {
         return roleRepo.findByName(name);
     }
+
+    public User registerDTOtoUser(RegisterDTO registerDTO) {
+        User user = new User();
+        user.setFullName(registerDTO.getFirstName() + "-" + registerDTO.getLastName());
+        user.setEmail(registerDTO.getEmail());
+        user.setPassword(registerDTO.getPassword());
+        return user;
+    }
+
+    public boolean checkEmailExist(String email) {
+        return userRepo.existsByEmail(email);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepo.findByEmail(email);
+    }
+
+
 }

@@ -1,6 +1,10 @@
 package vn.hoidanit.laptopshop.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "products")
@@ -9,12 +13,27 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "Tên sản phẩm không được để trống")
     private String name;
+
+    @NotNull
+    @DecimalMin(value = "0", inclusive = false, message = "Giá trị sản phẩm phải lớn hơn 0")
     private double price;
+
     private String image;
-    private String detailDesc;
+
+    @NotNull
+    @NotEmpty(message = "Mô tả sản phẩm không được để trống")
     private String shortDesc;
+
+    @NotNull
+    @NotEmpty(message = "Mô tả chi tiết không được để trống")
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String detailDesc;
+
+    @Min(value = 1, message = "Số lượng cần lớn hơn hoặc bằng 1")
     private long quantity;
+
     private long sold;
     private String factory;
     private String target;
@@ -97,6 +116,11 @@ public class Product {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    @Transient
+    public String getImagePath() {
+        return "/images/product/" + getImage();
     }
 
     @Override

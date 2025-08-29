@@ -12,8 +12,11 @@ public class User {
     private Long id;
 
     private String email;
+
     private String password;
+
     private String fullName;
+
     private String address;
     private String phone;
     private String avatar;
@@ -102,6 +105,11 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Transient
+    public String getAvatarPath() {
+        return "/images/avatar/" + getAvatar();
     }
 
     @Override

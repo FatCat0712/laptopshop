@@ -35,14 +35,16 @@
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Email:</label>
-                                            <input type="email" class="form-control" th:field="*{email}" id="email" th:disabled="${user.id != null}">
+                                            <input type="email" class="form-control" th:classAppend="${#fields.hasErrors('email') ? 'is-invalid' : ''}" th:field="*{email}" id="email" th:disabled="${user.id != null}">
+                                            <span th:if="${#fields.hasErrors('email')}"  th:errorclass="invalid-feedback" th:errors="*{email}"></span>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <th:block  th:unless="${user.id != null}">
                                             <div class="mb-3">
                                                 <label for="password" class="form-label">Password:</label>
-                                                <input type="password" class="form-control" th:field="*{password}" id="password">
+                                                <input type="password" class="form-control" th:classAppend="${#fields.hasErrors('password') ? 'is-invalid' : ''}" th:field="*{password}" id="password">
+                                                <span th:if="${#fields.hasErrors('password')}"  th:errorclass="invalid-feedback" th:errors="*{password}"></span>
                                             </div>
                                         </th:block>
                                     </div>
@@ -52,7 +54,8 @@
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
                                             <label for="fullName" class="form-label">Full Name:</label>
-                                            <input type="text" class="form-control" th:field="*{fullName}" id="fullName">
+                                            <input type="text" class="form-control"  th:classAppend="${#fields.hasErrors('fullName') ? 'is-invalid' : ''}" th:field="*{fullName}" id="fullName">
+                                            <span th:if="${#fields.hasErrors('fullName')}"  th:errorclass="invalid-feedback" th:errors="*{fullName}"></span>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
@@ -92,7 +95,11 @@
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <img th:class="${user.avatar != null ? 'd-block' : 'd-none'}" style="max-height: 250px;" alt="avatar preview" id="avatarPreview" th:src="@{'/avatar/' + ${user.avatar}}">
+                                            <img
+                                                    th:class="${user.avatar != null ? 'd-block' : 'd-none'}"
+                                                    style="max-height: 250px;"
+                                                    alt="avatar preview"
+                                                    id="avatarPreview" th:src="@{${user.avatarPath != null  ? '' : user.avatarPath}}">
                                         </div>
                                     </div>
                                 </div>

@@ -178,7 +178,7 @@
 
 /*** Hero Header ***/
 .hero-header {
-    background: linear-gradient(rgba(248, 223, 173, 0.1), rgba(248, 223, 173, 0.1)), url(../img/hero-img.png);
+    background: linear-gradient(302deg,rgba(148, 187, 233, 0.7) 5%, rgba(238, 174, 202, 0.37) 64%);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -449,6 +449,36 @@
     color: var(--bs-white);
 }
 /*** testimonial End ***/
+.page_404  img{
+    width:100%;
+}
+
+.four_zero_four_bg{
+    background: url(/client/img/dribbble.gif) no-repeat center center;
+    height: 400px;
+    background-position: center;
+    background-size: contain;
+ }
+
+.four_zero_four_bg h1{
+    font-size:80px;
+ }
+
+.four_zero_four_bg h3{
+    font-size:80px;
+}
+
+.link_404{
+    padding: 10px 20px;
+    margin: 20px 0;
+    display: inline-block;
+ }
+
+.contant_box_404{
+    margin-top:-50px;
+}
+
+/*Section Error*/
 
 
 /*** Single Page Start ***/
