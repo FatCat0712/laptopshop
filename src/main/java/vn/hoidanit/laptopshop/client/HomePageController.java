@@ -71,4 +71,6 @@ public class HomePageController {
     public String getDeniedPage() {
         return "client/auth/deny";
     }
+
+
 }

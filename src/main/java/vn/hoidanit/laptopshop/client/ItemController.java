@@ -37,4 +37,9 @@ public class ItemController {
         service.handleAddProductToCart(email, productId, session);
         return "redirect:/";
     }
+
+    @GetMapping("/cart")
+    public String getCartPage(Model model) {
+        return "client/cart/show";
+    }
 }
