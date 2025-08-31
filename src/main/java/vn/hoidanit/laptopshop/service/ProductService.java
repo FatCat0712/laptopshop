@@ -89,6 +89,7 @@ public class ProductService {
                 detail = cartDetail.get();
                 long currentQuantity = detail.getQuantity();
                 detail.setQuantity(currentQuantity + 1);
+                detail.setPrice(detail.getPrice() * detail.getQuantity());
             }
             else {
                 detail.setUser(user);
@@ -103,7 +104,6 @@ public class ProductService {
 
         }
     }
-
 
     public void handleDeleteCartDetail(Long detailId, HttpSession session) {
         String email = session.getAttribute("email").toString();
@@ -133,9 +133,10 @@ public class ProductService {
         for(CartDetail cartDetail : listCartDetails) {
             Optional<CartDetail> cdOptional = cartDetailRepository.findById(cartDetail.getId());
             if(cdOptional.isPresent()) {
-                CartDetail currentCardDetail = cdOptional.get();
-                currentCardDetail.setQuantity(cartDetail.getQuantity());
-                cartDetailRepository.save(currentCardDetail);
+                CartDetail currentCartDetail = cdOptional.get();
+                currentCartDetail.setQuantity(cartDetail.getQuantity());
+                currentCartDetail.setPrice(currentCartDetail.getQuantity() * currentCartDetail.getProduct().getPrice());
+                cartDetailRepository.save(currentCartDetail);
             }
         }
     }
@@ -144,19 +145,26 @@ public class ProductService {
             User user, HttpSession session ,
             String receiverName, String receiverAddress, String receiverPhone
     ) {
-//        Create order
-        Order order = new Order();
-        order.setUser(user);
-        order.setReceiverName(receiverName);
-        order.setReceiverAddress(receiverAddress);
-        order.setReceiverPhone(receiverPhone);
-        order = orderRepository.save(order);
 
-//        create orderDetail
 
 //        step 1: get cart by user
             List<CartDetail> listCartDetails = fetchByUser(user);
             if(!listCartDetails.isEmpty()) {
+                //        Create order
+                Order order = new Order();
+                order.setUser(user);
+                order.setReceiverName(receiverName);
+                order.setReceiverAddress(receiverAddress);
+                order.setReceiverPhone(receiverPhone);
+                order.setStatus("PENDING");
+                double totalPrice = 0;
+                for(CartDetail cd : listCartDetails) {
+                    totalPrice += cd.getPrice();
+                }
+                order.setTotalPrice(totalPrice);
+                order = orderRepository.save(order);
+
+                //        create orderDetail
                 for(CartDetail cd : listCartDetails) {
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setQuantity(cd.getQuantity());
@@ -176,5 +184,7 @@ public class ProductService {
 
             }
     }
+
+
 }
 

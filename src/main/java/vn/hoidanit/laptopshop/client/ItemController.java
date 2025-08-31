@@ -81,7 +81,7 @@ public class ItemController {
 
         double totalPrice = 0;
         for(CartDetail cd : listCardDetails) {
-            totalPrice += cd.getPrice() * cd.getQuantity();
+            totalPrice += cd.getPrice();
         }
 
         model.addAttribute("listCartDetails", listCardDetails);

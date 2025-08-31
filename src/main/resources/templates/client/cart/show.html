@@ -83,7 +83,7 @@
                             <td>
                                 <p class="mb-0 mt-4">
                                     <span th:data-cart-detail-id="${detail.id}">
-                                          [[${#numbers.formatDecimal(product.price * detail.quantity,0, 'COMMA', 0, 'POINT')}]] đ
+                                          [[${#numbers.formatDecimal(detail.price,0, 'COMMA', 0, 'POINT')}]] đ
                                     </span>
                                 </p>
                             </td>
@@ -128,7 +128,7 @@
                             </p>
                         </div>
                         <form th:action="@{/confirm-checkout}" method="post">
-                            <div style="display: block;">
+                            <div style="display: none;">
                                 <div  th:each="detail, status: ${listCartDetails}">
                                     <div class="mb-3">
                                         <div class="form-group">
