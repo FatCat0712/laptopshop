@@ -188,6 +188,21 @@
             z-index: 10;
         }
 
+        .dropdown-menu--cart::before,
+        .dropdown-menu--cart::after {
+          content: "";
+          position: absolute;
+          top: -9px; /* adjust based on spacing */
+          right: 27px; /* adjust to align with icon */
+           border-width: 0 8px 10px 8px;
+           border-style: solid;
+            z-index: 10;
+        }
+
+        .dropdown-menu--cart {
+            min-width: 500px;
+        }
+
         .dropdown-menu::before {
           border-color: transparent transparent rgba(0,0,0,.9) transparent; /* border shadow */
         }

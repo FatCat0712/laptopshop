@@ -30,6 +30,10 @@
 </head>
 <body>
 
+<span th:fragment="format_currency(amount)">
+        [[${#numbers.formatDecimal(amount,0, 'COMMA', 0, 'POINT')}]] đ
+</span>
+
 
 <div th:fragment="page_foot" th:remove="tag">
     <!-- JavaScript Libraries -->

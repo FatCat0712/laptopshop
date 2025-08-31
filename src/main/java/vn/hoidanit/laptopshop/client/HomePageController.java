@@ -1,8 +1,8 @@
 package vn.hoidanit.laptopshop.client;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,17 +21,18 @@ import java.util.List;
 public class HomePageController {
     private final ProductService productService;
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public HomePageController(ProductService productService, UserService userService, PasswordEncoder passwordEncoder) {
+    public HomePageController(
+            ProductService productService,
+            UserService userService
+    ) {
         this.productService = productService;
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/home")
-    public String getHomePage(Model model) {
+    public String getHomePage(Model model, HttpServletRequest request) {
         List<Product> listProducts = productService.listAll();
         model.addAttribute("listProducts", listProducts);
         return "client/homepage/show";
@@ -59,7 +60,6 @@ public class HomePageController {
         if(bindingResult.hasErrors()) {
             return "client/auth/register";
         }
-
         User user = userService.registerDTOtoUser(registerDTO);
         user.setRole(userService.getRoleByName("USER"));
         userService.save(user);

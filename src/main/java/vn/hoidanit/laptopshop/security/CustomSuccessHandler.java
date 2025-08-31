@@ -12,6 +12,7 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.service.ProductService;
 import vn.hoidanit.laptopshop.service.UserService;
 
 import java.io.IOException;
@@ -24,6 +25,9 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProductService productService;
 
 
     private String determineTargetUrl(final Authentication authentication) {
@@ -57,7 +61,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
                 session.setAttribute("avatar", user.getAvatarPath());
                 session.setAttribute("id", user.getId());
                 session.setAttribute("email", user.getEmail());
-                int sum = user.getCart().getSum();
+                int sum = productService.fetchByUser(user).size();
                 session.setAttribute("sum", sum);
             }
     }
