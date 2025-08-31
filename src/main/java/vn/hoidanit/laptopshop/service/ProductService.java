@@ -122,5 +122,16 @@ public class ProductService {
     public List<CartDetail> fetchByUser(User user) {
         return cartDetailRepository.findByUser(user);
     }
+
+    public void handleUpdateCartBeforeCheckout(List<CartDetail> listCartDetails) {
+        for(CartDetail cartDetail : listCartDetails) {
+            Optional<CartDetail> cdOptional = cartDetailRepository.findById(cartDetail.getId());
+            if(cdOptional.isPresent()) {
+                CartDetail currentCardDetail = cdOptional.get();
+                currentCardDetail.setQuantity(cartDetail.getQuantity());
+                cartDetailRepository.save(currentCardDetail);
+            }
+        }
+    }
 }
 

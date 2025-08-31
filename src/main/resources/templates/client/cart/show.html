@@ -38,7 +38,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="detail : ${listCartDetails}" th:with="product = ${detail.product}">
+                        <tr th:each="detail,status : ${listCartDetails}" th:with="product = ${detail.product}">
                             <th scope="row">
                                 <div class="d-flex align-items-center">
                                     <img th:src="@{${product.imagePath}}" class="img-fluid me-5" style="width: 80px; height: 80px;" th:alt="${product.name}">
@@ -71,6 +71,7 @@
                                             th:value="${detail.quantity}"
                                             th:data-cart-detail-id="${detail.id}"
                                             th:data-cart-detail-price="${detail.price}"
+                                            th:data-cart-detail-index="${status.index}"
                                     >
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-plus rounded-circle bg-light border">
@@ -119,14 +120,41 @@
                             </div>
                         </div>
                         <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                            <h5 class="mb-0 ps-4 me-4">Total</h5>
+                            <h5 class="mb-0 ps-4 me-4">Tổng số tiền</h5>
                             <p class="mb-0 pe-4">
                                 <span th:data-cart-total-price="${total}">
                                       [[${#numbers.formatDecimal(total,0, 'COMMA', 0, 'POINT')}]] đ
                                 </span>
                             </p>
                         </div>
-                        <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
+                        <form th:action="@{/confirm-checkout}" method="post">
+                            <div style="display: block;">
+                                <div  th:each="detail, status: ${listCartDetails}">
+                                    <div class="mb-3">
+                                        <div class="form-group">
+                                            <label>Id:</label>
+                                            <input
+                                                    class="form-control"
+                                                    type="text"
+                                                    th:value="${detail.id}"
+                                                    name="detailId"
+                                            />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Quantity:</label>
+                                            <input
+                                                    th:id="'cartDetail' + ${status.index} +'.quantity'"
+                                                    class="form-control"
+                                                    type="text" th:value="${detail.quantity}"
+                                                    name="detailQuantity"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="submit">Tiến hành thanh toán</button>
+                        </form>
+
                     </div>
                 </div>
             </div>

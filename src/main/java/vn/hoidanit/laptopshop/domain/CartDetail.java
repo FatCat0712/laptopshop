@@ -21,7 +21,13 @@ public class CartDetail {
 
     private double price;
 
+    public CartDetail() {
+    }
 
+    public CartDetail(Long id, long quantity) {
+        this.id = id;
+        this.quantity = quantity;
+    }
 
     public Long getId() {
         return id;

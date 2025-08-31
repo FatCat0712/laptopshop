@@ -8,13 +8,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import vn.hoidanit.laptopshop.client.advice.GlobalCartAdvice;
 import vn.hoidanit.laptopshop.domain.CartDetail;
 import vn.hoidanit.laptopshop.domain.Product;
+import vn.hoidanit.laptopshop.domain.User;
 import vn.hoidanit.laptopshop.exception.ProductNotFoundException;
 import vn.hoidanit.laptopshop.service.ProductService;
 import vn.hoidanit.laptopshop.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -65,5 +68,62 @@ public class ItemController {
     public String deleteCartDetail(@PathVariable(name = "detailId") Long detailId, HttpSession session) {
          productService.handleDeleteCartDetail(detailId, session);
         return "redirect:/cart";
+    }
+
+    @GetMapping("/checkout")
+    public String getCheckOutPage(HttpServletRequest request, Model model) {
+        User currentUser = new User();
+        HttpSession session = request.getSession(false);
+        Long id = (Long) session.getAttribute("id");
+        currentUser.setId(id);
+
+        List<CartDetail> listCardDetails = productService.fetchByUser(currentUser);
+
+        double totalPrice = 0;
+        for(CartDetail cd : listCardDetails) {
+            totalPrice += cd.getPrice() * cd.getQuantity();
+        }
+
+        model.addAttribute("listCartDetails", listCardDetails);
+        model.addAttribute("totalPrice", totalPrice);
+
+        return "client/cart/checkout";
+
+    }
+
+    @PostMapping("/confirm-checkout")
+    public String getCheckOutPage(HttpServletRequest request) {
+        List<CartDetail> listCartDetails = updateCartDetailsList(request);
+        productService.handleUpdateCartBeforeCheckout(listCartDetails);
+        return "redirect:/checkout";
+    }
+
+    @PostMapping("/place-order")
+    private String handlePlaceOrder(
+            HttpServletRequest request,
+            @RequestParam("receiverName") String receiverName,
+            @RequestParam("receiverAddress") String receiverAddress,
+            @RequestParam("receiverPhone") String receiverPhone
+    ) {
+        HttpSession session = request.getSession(false);
+        return "redirect:/";
+    }
+
+    private List<CartDetail> updateCartDetailsList(HttpServletRequest request) {
+        String[] detailIDs = request.getParameterValues("detailId");
+        String[] detailQuantities = request.getParameterValues("detailQuantity");
+
+        List<CartDetail> cartDetails = new ArrayList<>();
+
+        if(detailIDs != null && detailIDs.length > 0) {
+            for(int i = 0; i < detailIDs.length; i++) {
+                Long cartDetailId = Long.parseLong(detailIDs[i]);
+                long detailQuantity = Long.parseLong(detailQuantities[i]);
+                CartDetail cartDetail = new CartDetail(cartDetailId, detailQuantity);
+                cartDetails.add(cartDetail);
+            }
+        }
+
+        return cartDetails;
     }
 }
