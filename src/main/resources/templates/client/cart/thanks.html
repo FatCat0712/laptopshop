@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<div th:replace="~{client/layout/fragments :: page_head}"></div>
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+    <!-- Spinner End -->
+
+    <div th:replace="~{client/layout/header :: content}">...</div>
+
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="row ">
+            <div class="col-12 mt-5">
+                <div class="alert alert-success" role="alert">
+                    Cảm ơn bạn đã đặt hàng, đơn hàng đã được xác nhận thành công.
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:replace="~{client/layout/footer :: content}">...</div>
+
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+
+    <div th:replace="~{client/layout/fragments :: page_foot}"></div>
+</body>
+</html>

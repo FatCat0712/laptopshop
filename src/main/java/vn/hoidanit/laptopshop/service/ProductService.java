@@ -4,11 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.hoidanit.laptopshop.domain.CartDetail;
-import vn.hoidanit.laptopshop.domain.Product;
-import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.domain.*;
 import vn.hoidanit.laptopshop.exception.ProductNotFoundException;
 import vn.hoidanit.laptopshop.repository.CartDetailRepository;
+import vn.hoidanit.laptopshop.repository.OrderDetailRepository;
+import vn.hoidanit.laptopshop.repository.OrderRepository;
 import vn.hoidanit.laptopshop.repository.ProductRepository;
 
 import java.util.List;
@@ -20,16 +20,22 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CartDetailRepository cartDetailRepository;
     private final UserService userService;
+    private final OrderRepository orderRepository;
+    private final OrderDetailRepository orderDetailRepository;
 
     @Autowired
     public ProductService(
             ProductRepository productRepository,
             CartDetailRepository cartDetailRepository,
-            UserService userService
+            UserService userService,
+            OrderRepository orderRepository,
+            OrderDetailRepository orderDetailRepository
     ) {
         this.productRepository = productRepository;
         this.cartDetailRepository = cartDetailRepository;
         this.userService = userService;
+        this.orderRepository = orderRepository;
+        this.orderDetailRepository = orderDetailRepository;
     }
 
     public List<Product> listAll() {
@@ -132,6 +138,43 @@ public class ProductService {
                 cartDetailRepository.save(currentCardDetail);
             }
         }
+    }
+
+    public void handlePlaceOrder(
+            User user, HttpSession session ,
+            String receiverName, String receiverAddress, String receiverPhone
+    ) {
+//        Create order
+        Order order = new Order();
+        order.setUser(user);
+        order.setReceiverName(receiverName);
+        order.setReceiverAddress(receiverAddress);
+        order.setReceiverPhone(receiverPhone);
+        order = orderRepository.save(order);
+
+//        create orderDetail
+
+//        step 1: get cart by user
+            List<CartDetail> listCartDetails = fetchByUser(user);
+            if(!listCartDetails.isEmpty()) {
+                for(CartDetail cd : listCartDetails) {
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setQuantity(cd.getQuantity());
+                    orderDetail.setPrice(cd.getProduct().getPrice());
+                    orderDetail.setOrder(order);
+                    orderDetail.setProduct(cd.getProduct());
+                    orderDetailRepository.save(orderDetail);
+                }
+
+//                step 2: delete cart_detail
+                for(CartDetail cd : listCartDetails) {
+                    cartDetailRepository.deleteById(cd.getId());
+                }
+
+//                step 3: update session
+                session.setAttribute("sum", 0);
+
+            }
     }
 }
 
