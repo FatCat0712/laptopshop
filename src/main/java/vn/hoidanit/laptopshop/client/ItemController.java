@@ -48,7 +48,7 @@ public class ItemController {
 
         String email = session.getAttribute("email").toString();
 
-        productService.handleAddProductToCart(email, productId, session);
+        productService.handleAddProductToCart(email, productId, 1L, session);
         return "redirect:/";
     }
 
@@ -98,6 +98,24 @@ public class ItemController {
         return "redirect:/checkout";
     }
 
+    private List<CartDetail> updateCartDetailsList(HttpServletRequest request) {
+        String[] detailIDs = request.getParameterValues("detailId");
+        String[] detailQuantities = request.getParameterValues("detailQuantity");
+
+        List<CartDetail> cartDetails = new ArrayList<>();
+
+        if(detailIDs != null && detailIDs.length > 0) {
+            for(int i = 0; i < detailIDs.length; i++) {
+                Long cartDetailId = Long.parseLong(detailIDs[i]);
+                long detailQuantity = Long.parseLong(detailQuantities[i]);
+                CartDetail cartDetail = new CartDetail(cartDetailId, detailQuantity);
+                cartDetails.add(cartDetail);
+            }
+        }
+
+        return cartDetails;
+    }
+
     @PostMapping("/place-order")
     private String handlePlaceOrder(
             HttpServletRequest request,
@@ -119,21 +137,19 @@ public class ItemController {
         return "client/cart/thanks";
     }
 
-    private List<CartDetail> updateCartDetailsList(HttpServletRequest request) {
-        String[] detailIDs = request.getParameterValues("detailId");
-        String[] detailQuantities = request.getParameterValues("detailQuantity");
+    @PostMapping("/add-product-from-view-detail")
+    public String handleAddProductFromViewDetail(
+            @RequestParam(name = "productId") Long productId,
+            @RequestParam(name = "productQuantity") Long productQuantity,
+            HttpServletRequest request
+    ) throws ProductNotFoundException {
+        HttpSession session = request.getSession(false);
 
-        List<CartDetail> cartDetails = new ArrayList<>();
+        String email = session.getAttribute("email").toString();
 
-        if(detailIDs != null && detailIDs.length > 0) {
-            for(int i = 0; i < detailIDs.length; i++) {
-                Long cartDetailId = Long.parseLong(detailIDs[i]);
-                long detailQuantity = Long.parseLong(detailQuantities[i]);
-                CartDetail cartDetail = new CartDetail(cartDetailId, detailQuantity);
-                cartDetails.add(cartDetail);
-            }
-        }
-
-        return cartDetails;
+        productService.handleAddProductToCart(email, productId, productQuantity,  session);
+        return String.format("redirect:/product/%d", productId);
     }
+
+
 }

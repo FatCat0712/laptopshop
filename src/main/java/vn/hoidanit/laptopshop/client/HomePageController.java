@@ -1,6 +1,7 @@
 package vn.hoidanit.laptopshop.client;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,9 +10,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import vn.hoidanit.laptopshop.domain.Order;
 import vn.hoidanit.laptopshop.domain.Product;
 import vn.hoidanit.laptopshop.domain.User;
 import vn.hoidanit.laptopshop.domain.dto.RegisterDTO;
+import vn.hoidanit.laptopshop.service.OrderService;
 import vn.hoidanit.laptopshop.service.ProductService;
 import vn.hoidanit.laptopshop.service.UserService;
 
@@ -21,14 +24,18 @@ import java.util.List;
 public class HomePageController {
     private final ProductService productService;
     private final UserService userService;
+    private final OrderService orderService;
+
 
     @Autowired
     public HomePageController(
             ProductService productService,
-            UserService userService
+            UserService userService,
+            OrderService orderService
     ) {
         this.productService = productService;
         this.userService = userService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/home")
@@ -70,6 +77,17 @@ public class HomePageController {
     @GetMapping("/access_denied")
     public String getDeniedPage() {
         return "client/auth/deny";
+    }
+
+    @GetMapping("/order_history")
+    public String getOrderHistory(HttpServletRequest request, Model model) {
+            HttpSession session = request.getSession(false);
+            User currentUser = new User();
+            Long id = (Long) session.getAttribute("id");
+            currentUser.setId(id);
+            List<Order> listOrders = orderService.findOrderByUser(currentUser);
+            model.addAttribute("listOrders", listOrders);
+            return "client/cart/order_history";
     }
 
 

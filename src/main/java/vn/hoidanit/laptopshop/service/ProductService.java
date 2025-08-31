@@ -77,7 +77,7 @@ public class ProductService {
         productRepository.deleteById(productId);
     }
 
-    public void handleAddProductToCart(String email, Long productId, HttpSession session) throws ProductNotFoundException {
+    public void handleAddProductToCart(String email, Long productId, Long quantity, HttpSession session) throws ProductNotFoundException {
 //        check if user already had a cart or else create new cart
         User user = userService.getUserByEmail(email);
         if (user != null) {
@@ -88,14 +88,14 @@ public class ProductService {
             if(cartDetail.isPresent()) {
                 detail = cartDetail.get();
                 long currentQuantity = detail.getQuantity();
-                detail.setQuantity(currentQuantity + 1);
+                detail.setQuantity(currentQuantity + quantity);
                 detail.setPrice(detail.getPrice() * detail.getQuantity());
             }
             else {
                 detail.setUser(user);
                 detail.setProduct(product);
                 detail.setPrice(product.getPrice());
-                detail.setQuantity(1);
+                detail.setQuantity(quantity);
             }
 
             cartDetailRepository.save(detail);

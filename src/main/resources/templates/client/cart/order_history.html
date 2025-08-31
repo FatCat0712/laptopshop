@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<div th:replace="~{client/layout/fragments :: page_head}"></div>
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+    <!-- Spinner End -->
+
+    <div th:replace="~{client/layout/header :: content}">...</div>
+
+
+    <div class="container-fluid" style="margin-top: 100px;">
+        <div class="container px-0">
+            <ol class="breadcrumb justify-content-start mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/home}">Home</a></li>
+                <li class="breadcrumb-item active">Lịch sử mua hàng</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Sản phẩm</th>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Giá cả</th>
+                        <th scope="col">Số lượng</th>
+                        <th scope="col">Thành tiền</th>
+                        <th scope="col">Trạng thái</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <th:block th:each="order : ${listOrders}">
+                            <tr>
+                                <td colspan="2">Order Id = [[${order.id}]]</td>
+                                <td colspan="3">[[${#numbers.formatDecimal(order.totalPrice,0, 'COMMA', 0, 'POINT')}]] đ</td>
+                                <td>[[${order.status}]]</td>
+                            </tr>
+                            <th:block th:each="od : ${order.orderDetails}" th:with="product = ${od.product}">
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img th:src="@{${product.imagePath}}" class="img-fluid me-5" style="width: 80px; height: 80px;" th:alt="${product.name}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{'/product/' + ${product.id}}">[[${product.name}]]</a>
+                                    </td>
+                                    <td>
+                                        [[${od.quantity}]]
+                                    </td>
+                                    <td>
+                                        [[${#numbers.formatDecimal(od.price,0, 'COMMA', 0, 'POINT')}]] đ
+                                    </td>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div th:replace="~{client/layout/footer :: content}">...</div>
+
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+
+    <div th:replace="~{client/layout/fragments :: page_foot}"></div>
+</body>
+</html>

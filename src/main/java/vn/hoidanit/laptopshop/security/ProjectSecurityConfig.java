@@ -18,7 +18,7 @@ public class ProjectSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/admin**").hasRole("ADMIN")
-                .requestMatchers("/cart").authenticated()
+                .requestMatchers("/cart", "/order_history").authenticated()
                 .anyRequest().permitAll()
         );
 

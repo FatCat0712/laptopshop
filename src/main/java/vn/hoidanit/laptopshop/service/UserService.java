@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import vn.hoidanit.laptopshop.domain.Role;
 import vn.hoidanit.laptopshop.domain.User;
 import vn.hoidanit.laptopshop.domain.dto.RegisterDTO;
+import vn.hoidanit.laptopshop.repository.OrderRepository;
+import vn.hoidanit.laptopshop.repository.ProductRepository;
 import vn.hoidanit.laptopshop.repository.RoleRepository;
 import vn.hoidanit.laptopshop.repository.UserRepository;
 
@@ -16,12 +18,20 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepo;
     private final RoleRepository roleRepo;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepo, RoleRepository roleRepo, PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserRepository userRepo, RoleRepository roleRepo,
+            ProductRepository productRepository, OrderRepository orderRepository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -91,6 +101,18 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return userRepo.findByEmail(email);
+    }
+
+    public long countUsers() {
+        return this.userRepo.count();
+    }
+
+    public long countProducts() {
+        return this.productRepository.count();
+    }
+
+    public long countOrders() {
+        return this.orderRepository.count();
     }
 
 

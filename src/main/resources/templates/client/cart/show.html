@@ -39,11 +39,11 @@
                     </thead>
                     <tbody>
                         <tr th:each="detail,status : ${listCartDetails}" th:with="product = ${detail.product}">
-                            <th scope="row">
+                            <td>
                                 <div class="d-flex align-items-center">
                                     <img th:src="@{${product.imagePath}}" class="img-fluid me-5" style="width: 80px; height: 80px;" th:alt="${product.name}">
                                 </div>
-                            </th>
+                            </td>
                             <td>
                                 <p class="mb-0 mt-4">
                                   <a th:href="@{'/product/' + ${product.id}}" target="_blank">
