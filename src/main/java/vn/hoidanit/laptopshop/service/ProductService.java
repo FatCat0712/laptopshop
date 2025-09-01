@@ -3,6 +3,8 @@ package vn.hoidanit.laptopshop.service;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.laptopshop.domain.*;
 import vn.hoidanit.laptopshop.exception.ProductNotFoundException;
@@ -38,8 +40,9 @@ public class ProductService {
         this.orderDetailRepository = orderDetailRepository;
     }
 
-    public List<Product> listAll() {
-        return productRepository.findAll();
+
+    public Page<Product> listByPage(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     public Product get(Long productId) throws ProductNotFoundException {

@@ -8,79 +8,100 @@
     <meta name="author" content="" />
     <title>Product - SB Admin</title>
     <link th:href="@{/css/styles.css}" rel="stylesheet" />
+    <link th:href="@{/css/spinner.css}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
-<div th:replace="~{admin/layout/header :: content}">...</div>
-<div id="layoutSidenav">
-    <div th:replace="~{admin/layout/sidebar :: content}">...</div>
-    <div id="layoutSidenav_content">
-        <main>
-            <div class="container-fluid px-4">
-                <h1 class="mt-4">Manage Products</h1>
-                <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item">
-                        <a th:href="@{/admin}" class="text-decoration-none">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item active">Products</li>
-                </ol>
-                <div class="container mt-5">
-                    <div class="row">
-                        <div class="col-12 mx-auto">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h2>
-                                        Table products
-                                    </h2>
+    <div th:replace="~{admin/layout/header :: content}">...</div>
+    <div id="layoutSidenav">
+        <div th:replace="~{admin/layout/sidebar :: content}">...</div>
+        <div id="layoutSidenav_content">
+            <main style="position: relative;">
+                <div class="container-fluid px-4">
+                    <div id="spinner-overlay">
+                        <div class="spinner"></div>
+                    </div>
+                    <h1 class="mt-4">Manage Products</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/admin}" class="text-decoration-none">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item active">Products</li>
+                    </ol>
+                    <div class="container mt-5">
+                        <div class="row">
+                            <div class="col-12 mx-auto">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h2>
+                                            Table products
+                                        </h2>
+                                    </div>
+                                    <div>
+                                        <a class="btn btn-primary p-2" th:href="@{/admin/product/create}">
+                                            Create a product
+                                        </a>
+                                    </div>
                                 </div>
-                                <div>
-                                    <a class="btn btn-primary p-2" th:href="@{/admin/product/create}">
-                                        Create a product
-                                    </a>
+                                <hr>
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Price</th>
+                                            <th>Factory</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="product : ${listProducts}">
+                                            <td>[[${product.id}]]</td>
+                                            <td>[[${product.name}]]</td>
+                                            <td>
+                                                [[${#numbers.formatDecimal(product.price,0, 'COMMA', 0, 'POINT')}]] đ
+                                            </td>
+                                            <td>[[${product.factory}]]</td>
+                                            <td>
+                                                <a class="btn btn-success" th:href="@{'/admin/product/detail/' + ${product.id}}">View</a>
+                                                &nbsp;
+                                                <a class="btn btn-warning" th:href="@{'/admin/product/update/' + ${product.id}}">Update</a>
+                                                &nbsp;
+                                                <a class="btn btn-danger" th:href="@{'/admin/product/delete/' + ${product.id}}">Delete</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div th:if="${totalPages > 1}">
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination justify-content-start flex-wrap">
+                                            <li th:class="${currentPage > 1} ? 'page-item' : 'page-item disabled'">
+                                                <a class="page-link" th:href="@{/admin/product?page=1}">First</a>
+                                            </li>
+                                            <li th:class="${currentPage > 1} ? 'page-item' : 'page-item disabled'">
+                                                <a class="page-link" th:href="@{'/admin/product?page=' + ${currentPage - 1}}">Previous</a>
+                                            </li>
+                                            <li  th:class="${currentPage != i} ? 'page-item' : 'page-item active'" th:each="i : ${#numbers.sequence(1, totalPages)}">
+                                                <a class="page-link" th:href="@{'/admin/product?page=' + ${i}}">[[${i}]]</a>
+                                            </li>
+                                            <li th:class="${currentPage < totalPages} ? 'page-item' : 'page-item disabled'">
+                                                <a class="page-link" th:href="@{'/admin/product?page=' + ${currentPage + 1}}">Next</a>
+                                            </li>
+                                            <li  th:class="${currentPage < totalPages} ? 'page-item' : 'page-item disabled'">
+                                                <a class="page-link" th:href="@{'/admin/product?page=' + ${totalPages}}">Last</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
                                 </div>
-                            </div>
-                            <hr>
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Factory</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="product : ${listProducts}">
-                                        <td>[[${product.id}]]</td>
-                                        <td>[[${product.name}]]</td>
-                                        <td>
-                                            [[${#numbers.formatDecimal(product.price,0, 'COMMA', 0, 'POINT')}]] đ
-                                        </td>
-                                        <td>[[${product.factory}]]</td>
-                                        <td>
-                                            <a class="btn btn-success" th:href="@{'/admin/product/detail/' + ${product.id}}">View</a>
-                                            &nbsp;
-                                            <a class="btn btn-warning" th:href="@{'/admin/product/update/' + ${product.id}}">Update</a>
-                                            &nbsp;
-                                            <a class="btn btn-danger" th:href="@{'/admin/product/delete/' + ${product.id}}">Delete</a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div>
-
                             </div>
                         </div>
                     </div>
-
                 </div>
-
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
-</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script th:src="@{/js/scripts.js}"></script>
+<script th:src="@{/js/spinner.js}"></script>
 </body>
 </html>

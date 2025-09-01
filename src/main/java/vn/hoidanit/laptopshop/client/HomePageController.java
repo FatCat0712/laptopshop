@@ -4,6 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,7 +43,9 @@ public class HomePageController {
 
     @GetMapping("/home")
     public String getHomePage(Model model, HttpServletRequest request) {
-        List<Product> listProducts = productService.listAll();
+        Pageable pageable = PageRequest.of(0,10);
+        Page<Product> page = productService.listByPage(pageable);
+        List<Product> listProducts = page.getContent();
         model.addAttribute("listProducts", listProducts);
         return "client/homepage/show";
     }
