@@ -3,6 +3,10 @@ package vn.hoidanit.laptopshop.client;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import vn.hoidanit.laptopshop.client.advice.GlobalCartAdvice;
 import vn.hoidanit.laptopshop.domain.CartDetail;
 import vn.hoidanit.laptopshop.domain.Product;
+import vn.hoidanit.laptopshop.domain.Product_;
 import vn.hoidanit.laptopshop.domain.User;
+import vn.hoidanit.laptopshop.domain.dto.ProductCriteriaDTO;
 import vn.hoidanit.laptopshop.exception.ProductNotFoundException;
 import vn.hoidanit.laptopshop.service.ProductService;
 import vn.hoidanit.laptopshop.service.UserService;
@@ -33,6 +39,48 @@ public class ItemController {
     ) {
         this.productService = productService;
         this.globalCartAdvice = globalCartAdvice;
+    }
+
+    @GetMapping("/products")
+    public String listProductsByPage(
+            HttpServletRequest request,
+            ProductCriteriaDTO productCriteriaDTO,
+            Model model
+    ) {
+
+        int pageNum = productCriteriaDTO.getPage() != null ? Integer.parseInt(productCriteriaDTO.getPage()) : 1;
+
+
+        Sort sort = Sort.by(Product_.PRICE);
+        if(productCriteriaDTO.getSort() != null) {
+            String sortDir = productCriteriaDTO.getSort();
+           if(sortDir.equals("gia-tang-dan")) sort = sort.ascending();
+            else if(sortDir.equals("gia-giam-dan")) sort = sort.descending();
+        }
+
+        Pageable pageable = null;
+
+        if(productCriteriaDTO.getSort() != null && !productCriteriaDTO.getSort().equals("khong-sap-xep")) {
+            pageable = PageRequest.of(pageNum - 1, 6, sort);
+        }
+        else {
+            pageable = PageRequest.of(pageNum -1, 6);
+        }
+
+        Page<Product> page = productService.fetchProductsWithSpec(productCriteriaDTO, pageable);
+
+        List<Product> listProducts = page.getContent();
+
+        String qs = request.getQueryString();
+        if(qs != null && !qs.isBlank()) {
+            qs = qs.replace("page=" + pageNum, "");
+        }
+
+        model.addAttribute("currentPage", pageNum);
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("listProducts", listProducts);
+        model.addAttribute("queryString", qs);
+        return "client/product/show";
     }
 
     @GetMapping("/product/{id}")

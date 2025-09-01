@@ -2,6 +2,9 @@ package vn.hoidanit.laptopshop.admin;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -27,13 +30,6 @@ public class UserController {
         this.uploadService = uploadService;
     }
 
-    @RequestMapping(value = {"","/"})
-    public String index() {
-        List<User> listUsers = userService.listAll();
-        System.out.println(listUsers);
-        return "index";
-    }
-
     @GetMapping("/admin/user/create")
     public String createUser(Model model) {
         User user = new User();
@@ -43,8 +39,18 @@ public class UserController {
     }
 
     @GetMapping("/admin/user")
-    public String listUser(Model model) {
-        List<User> listUsers = userService.listAll();
+    public String listUser(@RequestParam(name = "page", required = false) Integer pageNum, Model model) {
+
+        if(pageNum == null) {
+            pageNum = 1;
+        }
+        Pageable pageable = PageRequest.of(pageNum - 1, 5);
+        Page<User> page = userService.listByPage(pageable);
+        List<User> listUsers = page.getContent();
+
+
+        model.addAttribute("currentPage", pageNum);
+        model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("listUsers", listUsers);
         model.addAttribute("pageTitle", "Table Users");
         return "admin/user/show";

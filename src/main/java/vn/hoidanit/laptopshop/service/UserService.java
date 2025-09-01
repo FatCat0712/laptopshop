@@ -1,6 +1,8 @@
 package vn.hoidanit.laptopshop.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.laptopshop.domain.Role;
@@ -37,6 +39,10 @@ public class UserService {
 
     public List<User> listAll() {
         return userRepo.findAll();
+    }
+
+    public Page<User> listByPage(Pageable pageable) {
+        return userRepo.findAll(pageable);
     }
 
     public User listByEmail(String email) {

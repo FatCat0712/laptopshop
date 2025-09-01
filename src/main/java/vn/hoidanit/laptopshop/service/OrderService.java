@@ -2,6 +2,8 @@ package vn.hoidanit.laptopshop.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.laptopshop.domain.Order;
 import vn.hoidanit.laptopshop.domain.OrderDetail;
@@ -26,6 +28,10 @@ public class OrderService {
 
     public List<Order> listAllOrders() {
         return orderRepository.findAll();
+    }
+
+    public Page<Order> listByPage(Pageable pageable) {
+        return orderRepository.findAll(pageable);
     }
 
     public Order findOrderById(Long orderId) {

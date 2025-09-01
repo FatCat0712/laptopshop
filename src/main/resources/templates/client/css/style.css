@@ -572,6 +572,16 @@
     color: var(--bs-light);
     border: 1px solid var(--bs-secondary);
 }
+
+.pagination a.disabled {
+     background: #f1f1f1;
+      border: 1px solid #ccc;
+      color: #aaa;
+      cursor: not-allowed;
+      pointer-events: none; /* prevent clicks */
+}
+
+
   
 .pagination a:hover:not(.active) {background-color: var(--bs-primary)}
 

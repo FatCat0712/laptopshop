@@ -5,16 +5,21 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.laptopshop.domain.*;
+import vn.hoidanit.laptopshop.domain.dto.ProductCriteriaDTO;
 import vn.hoidanit.laptopshop.exception.ProductNotFoundException;
 import vn.hoidanit.laptopshop.repository.CartDetailRepository;
 import vn.hoidanit.laptopshop.repository.OrderDetailRepository;
 import vn.hoidanit.laptopshop.repository.OrderRepository;
 import vn.hoidanit.laptopshop.repository.ProductRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static vn.hoidanit.laptopshop.service.specification.ProductSpecs.*;
 
 @Service
 @Transactional
@@ -40,9 +45,66 @@ public class ProductService {
         this.orderDetailRepository = orderDetailRepository;
     }
 
-
     public Page<Product> listByPage(Pageable pageable) {
         return productRepository.findAll(pageable);
+    }
+
+
+    public Page<Product> fetchProductsWithSpec(ProductCriteriaDTO productCriteriaDTO, Pageable pageable) {
+        Specification<Product> combinedSpec = ((root, query, criteriaBuilder) -> criteriaBuilder.conjunction());
+        if(productCriteriaDTO.getTarget() != null) {
+            String[] targets = productCriteriaDTO.getTarget().split(",");
+            List<String> targetList = Arrays.asList(targets);
+            Specification<Product> currentSpecs = matchListTarget(targetList);
+           combinedSpec = combinedSpec.and(currentSpecs);
+        }
+
+        if(productCriteriaDTO.getFactory() != null) {
+            String[] targets = productCriteriaDTO.getFactory().split(",");
+            List<String> targetList = Arrays.asList(targets);
+            Specification<Product> currentSpecs = matchListFactory(targetList);
+            combinedSpec = combinedSpec.and(currentSpecs);
+        }
+
+        if(productCriteriaDTO.getPrice() != null) {
+            String[] prices = productCriteriaDTO.getPrice().split(",");
+            Specification<Product> priceSpecs = (((root, query, criteriaBuilder) -> criteriaBuilder.disjunction()));
+            for(String price : prices) {
+                double min = 0;
+                double max = 0;
+                switch (price) {
+                    case "duoi-10-trieu":
+                        max = 10000000;
+                        break;
+                    case "10-toi-15-trieu":
+                        min = 10000000;
+                        max = 15000000;
+                        break;
+                    case "15-toi-20-trieu":
+                        min = 15000000;
+                        max = 20000000;
+                        break;
+                    case "tren-20-trieu":
+                        min = 20000000;
+                        break;
+                }
+
+                if(min == 0) {
+                    priceSpecs = priceSpecs.or(maxPrice(max));
+                }
+                else if(max == 0) {
+                    priceSpecs = priceSpecs.or(minPrice(min));
+                }
+                else {
+                    priceSpecs = priceSpecs.or(matchListPrice(min,max));
+                }
+            }
+            combinedSpec = combinedSpec.and(priceSpecs);
+        }
+
+        return productRepository.findAll(combinedSpec, pageable);
+
+
     }
 
     public Product get(Long productId) throws ProductNotFoundException {
@@ -149,7 +211,6 @@ public class ProductService {
             String receiverName, String receiverAddress, String receiverPhone
     ) {
 
-
 //        step 1: get cart by user
             List<CartDetail> listCartDetails = fetchByUser(user);
             if(!listCartDetails.isEmpty()) {
@@ -187,6 +248,10 @@ public class ProductService {
 
             }
     }
+
+
+
+
 
 
 }
